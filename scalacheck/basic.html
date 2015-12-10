@@ -431,28 +431,8 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
   </div>
   <div class="slide hidden  " id="slide-6">
     <section class="slide-content"><h3 id="let-s-catch-some-corner-cases">let&#39;s catch some corner cases</h3>
-<pre><code class="lang-scala"><span class="hljs-keyword">package</span> example
-
-<span class="hljs-keyword">import</span> org.junit.runner.<span class="hljs-type">RunWith</span>
-<span class="hljs-keyword">import</span> org.scalatest.junit.<span class="hljs-type">JUnitRunner</span>
-<span class="hljs-keyword">import</span> org.scalatest.<span class="hljs-type">FunSuite</span>
-
-<span class="hljs-keyword">import</span> math.<span class="hljs-type">FunMath</span>
-<span class="hljs-keyword">import</span> math.<span class="hljs-type">FunMath</span>._
-
-<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">FunMathSuite</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">FunSuite</span> </span>{
-  <span class="hljs-comment">// basic numbers</span>
-  test(<span class="hljs-string">"1 should fail"</span>) {
-    assert(<span class="hljs-type">FunMath</span>.divisibleByThree(<span class="hljs-number">1</span>) == <span class="hljs-literal">false</span>)
-  }
-  test(<span class="hljs-string">"2 should fail"</span>) {
-    assert(<span class="hljs-type">FunMath</span>.divisibleByThree(<span class="hljs-number">2</span>) == <span class="hljs-literal">false</span>)
-  }
-  test(<span class="hljs-string">"3 should pass"</span>) {
-    assert(<span class="hljs-type">FunMath</span>.divisibleByThree(<span class="hljs-number">3</span>) == <span class="hljs-literal">true</span>)
-  }
-
-  <span class="hljs-comment">// tiny numbers</span>
+<p>scrolling down... </p>
+<pre><code class="lang-scala">  <span class="hljs-comment">// tiny numbers</span>
   test(<span class="hljs-string">"-17077161 should pass"</span>) {
     assert(<span class="hljs-type">FunMath</span>.divisibleByThree(<span class="hljs-number">-17077161</span>) == <span class="hljs-literal">true</span>)
   }
@@ -471,8 +451,7 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
   <span class="hljs-comment">// weird numbers</span>
   test(<span class="hljs-string">"0 should fail"</span>) {
     assert(<span class="hljs-type">FunMath</span>.divisibleByThree(<span class="hljs-number">0</span>) == <span class="hljs-literal">false</span>)    
-  }
-}</code></pre>
+  }</code></pre>
 </section>
   </div>
   <div class="slide hidden" id="slide-7">
@@ -543,7 +522,41 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
 </section>
   </div>
   <div class="slide hidden" id="slide-10">
+    <section class="slide-content"><h3 id="scalacheck-">scalacheck!</h3>
+<p>define behavior, get data</p>
+</section>
+  </div>
+  <div class="slide hidden" id="slide-11">
     <section class="slide-content"><h3 id="let-s-let-scalacheck-come-up-with-data-for-us">let&#39;s let scalacheck come up with data for us</h3>
+<pre><code class="lang-scala"><span class="hljs-keyword">package</span> example
+
+<span class="hljs-keyword">import</span> org.scalatest.prop.<span class="hljs-type">Checkers</span>
+<span class="hljs-keyword">import</span> org.scalacheck.<span class="hljs-type">Prop</span>.forAll
+<span class="hljs-keyword">import</span> org.junit.runner.<span class="hljs-type">RunWith</span>
+<span class="hljs-keyword">import</span> org.scalatest.junit.<span class="hljs-type">JUnitRunner</span>
+<span class="hljs-keyword">import</span> org.scalatest.<span class="hljs-type">FunSuite</span>
+
+<span class="hljs-keyword">import</span> math.<span class="hljs-type">FunMath</span>
+<span class="hljs-keyword">import</span> math.<span class="hljs-type">FunMath</span>._
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">FunMathSuite5</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">FunSuite</span> <span class="hljs-keyword">with</span> <span class="hljs-title">Checkers</span> </span>{
+  <span class="hljs-keyword">val</span> propIsMultipleOfThree = forAll{
+  (n: <span class="hljs-type">Int</span>) =&gt; <span class="hljs-type">FunMath</span>.divisibleByThree(n) == ((n % <span class="hljs-number">3</span>) == <span class="hljs-number">0</span>)
+  }
+
+  test(<span class="hljs-string">"results agree with mod 3"</span>) {
+    check(propIsMultipleOfThree)
+  }
+}</code></pre>
+</section>
+  </div>
+  <div class="slide hidden" id="slide-12">
+    <section class="slide-content"><h3 id="look-out-for">look out for</h3>
+<pre><code class="lang-scala">assert(myBuggyFunction1 == myBuggyFunction2)</code></pre>
+</section>
+  </div>
+  <div class="slide hidden" id="slide-13">
+    <section class="slide-content"><h3 id="thanks-">thanks!</h3>
 </section>
   </div>
 

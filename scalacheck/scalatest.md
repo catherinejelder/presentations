@@ -18,12 +18,11 @@ For any multiple of three, the sum of its digits is also a multiple of three.
 
 For any multiple of three, the sum of its digits is also a multiple of three.
 
-	12: 1+2 = 3
+####	12: 1+2 = 3
 
-	810: 8+1+0 = 9
+####	810: 8+1+0 = 9
 
 --
-
 ### let's try it
 
 ```scala
@@ -37,7 +36,7 @@ object FunMath {
     val sum = sumOfDigits(x)
     if (sum < 10) {
       sum match {
-        case 3 | 6 | 9 => true
+        case 0 | 3 | 6 | 9 => true
         case _ => false
       }
     } else divisibleByThree(sum)
@@ -47,6 +46,7 @@ object FunMath {
     Math.abs(x).toString.toList.map(c => c.asDigit).foldLeft(0)(_ + _)
 }
 ```
+
 --
 ### let's test it
 
@@ -75,10 +75,8 @@ class FunMathSuite extends FunSuite {
 ```
 
 -- 
-
 ### let's catch some corner cases
 
-scrolling down... 
 ```scala
   // tiny numbers
   test("-17077161 should pass") {
@@ -97,13 +95,12 @@ scrolling down...
   }  
   
   // weird numbers
-  test("0 should fail") {
-    assert(FunMath.divisibleByThree(0) == false)    
+  test("0 should pass") {
+    assert(FunMath.divisibleByThree(0) == true)    
   }
 ```
 
 --
-
 ### let's encapsulate our data
 
 ```scala
@@ -117,8 +114,8 @@ import math.FunMath
 import math.FunMath._
 
 class FunMathSuite3 extends FunSuite {
-  val multiplesOfThree = List(-17077161, 3, 6442449)
-  val nonMultiplesOfThree = List(-2147483648, 0, 1, 2, 2147483647)
+  val multiplesOfThree = List(-17077161, 0, 3, 6442449)
+  val nonMultiplesOfThree = List(Int.MinValue, 1, 2, Int.MaxValue)
   
   // passing numbers
   test("multiples of three should pass") {
@@ -172,10 +169,12 @@ class FunMathSuite4 extends FunSuite {
 ### too much work
 
 ![Lazy Dog](/assets/dog.JPG)
+
 --
 ### scalacheck!
 
 define behavior, get data
+
 --
 ### let's let scalacheck come up with data for us
 
@@ -193,7 +192,7 @@ import math.FunMath._
 
 class FunMathSuite5 extends FunSuite with Checkers {
   val propIsMultipleOfThree = forAll{
-  (n: Int) => FunMath.divisibleByThree(n) == ((n % 3) == 0)
+  	(n: Int) => FunMath.divisibleByThree(n) == ((n % 3) == 0)
   }
   
   test("results agree with mod 3") {
@@ -201,10 +200,13 @@ class FunMathSuite5 extends FunSuite with Checkers {
   }
 }
 ```
+
 --
 ### look out for
+
 ```scala
 assert(myBuggyFunction1 == myBuggyFunction2)
 ```
+
 --
 ### thanks!
