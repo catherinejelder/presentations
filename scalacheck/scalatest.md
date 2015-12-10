@@ -4,9 +4,7 @@ controls: true
 
 --
 
-# testing!
-## let's talk about it
-
+# let's talk about testing!
 --
 
 ### math trick
@@ -147,7 +145,8 @@ import math.FunMath._
 
 class FunMathSuite4 extends FunSuite {
   val multiplesOfThree = -17077161 :: 6442449 :: (-102 to 100 by 3).toList  
-  val nonMultiplesOfThree = Int.MinValue :: Int.MaxValue :: (-101 to 100 by 3).toList ::: (-100 to 100 by 3).toList
+  val nonMultiplesOfThree = (Int.MinValue :: Int.MaxValue :: (-101 to 100 by 3).toList 
+    ::: (-100 to 100 by 3).toList)
   
   // passing numbers
   test("multiples of three should pass") {
@@ -168,12 +167,13 @@ class FunMathSuite4 extends FunSuite {
 -- 
 ### too much work
 
-![Lazy Dog](/assets/dog.JPG)
+![Lazy Dog](file:///Users/celder/Documents/presentations/scalacheck/assets/dog.JPG)
 
 --
 ### scalacheck!
 
-define behavior, get data
+I'm tired of coming up with data points.
+I want to define behavior and get data for free.
 
 --
 ### let's let scalacheck come up with data for us
@@ -204,9 +204,7 @@ class FunMathSuite5 extends FunSuite with Checkers {
 --
 ### look out for
 
-```scala
 assert(myBuggyFunction1 == myBuggyFunction2)
-```
 
 --
 ### thanks!
