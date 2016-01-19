@@ -2,7 +2,7 @@
 
 A collection of short personal presentations from my time at the Recurse Center.
 
-To take a look, first install [Cleaver](https://github.com/jdan/cleaver).
+To take a look, first install [Cleaver](https://github.com/jdan/cleaver):
 
 ```sh
 npm install -g cleaver
