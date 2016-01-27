@@ -11,8 +11,14 @@ npm install -g cleaver
 # To update: npm upgrade -g cleaver
 ```
 
-And then launch the presentation:
+Generate the html presentation:
 
 ```bash
 cleaver path/to/something.md
+```
+
+View the presentation:
+
+```bash
+open path/to/basic.html
 ```
