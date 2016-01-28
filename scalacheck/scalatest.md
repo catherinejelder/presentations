@@ -173,7 +173,8 @@ class FunMathSuite4 extends FunSuite {
 ### scalacheck!
 
 I'm tired of coming up with data points.
-I want to define behavior and get data for free.
+
+I want to specify behavior and get data for free.
 
 --
 ### let's let scalacheck come up with data for us
@@ -204,7 +205,7 @@ class FunMathSuite5 extends FunSuite with Checkers {
 --
 ### look out for
 
-assert(myBuggyFunction1 == myBuggyFunction2)
+assert ( myBuggyFunction1 == myBuggyFunction2 )
 
 --
 ### thanks!
