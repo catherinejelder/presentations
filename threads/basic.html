@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-  <title>The Evolution of Testing</title>
+  <title>Threads and Locks</title>
   <style type="text/css">
     body {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -364,197 +364,89 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
   </div>
 
   <div class="slide" id="slide-1">
-    <section class="slide-content"><h1 id="let-s-talk-about-testing-">let&#39;s talk about testing!</h1>
+    <section class="slide-content"><h1 id="threads-and-locks">threads and locks</h1>
 </section>
   </div>
   <div class="slide hidden" id="slide-2">
-    <section class="slide-content"><h3 id="math-trick">math trick</h3>
-<p>For any multiple of three, the sum of its digits is also a multiple of three.</p>
+    <section class="slide-content"><h3 id="processes">processes</h3>
+<p>&quot;A process can be thought of as an instance of a program in execution.&quot; - CCI</p>
+<p>Each process is allocated separate resources (CPU time, address space)</p>
+<p>Inter-process communication is limited (pipes, files, sockets)</p>
 </section>
   </div>
   <div class="slide hidden" id="slide-3">
-    <section class="slide-content"><h3 id="math-trick">math trick</h3>
-<p>For any multiple of three, the sum of its digits is also a multiple of three.</p>
-<h4 id="12-1-2-3">12: 1+2 = 3</h4>
-<h4 id="810-8-1-0-9">810: 8+1+0 = 9</h4>
+    <section class="slide-content"><h3 id="thread">thread</h3>
+<p>A thread exists within a process.</p>
+<p>Each thread has its own stack and registers, but shares the heap with other threads in the same process.</p>
 </section>
   </div>
   <div class="slide hidden" id="slide-4">
-    <section class="slide-content"><h3 id="let-s-try-it">let&#39;s try it</h3>
-<pre><code class="lang-scala"><span class="hljs-keyword">package</span> math
-<span class="hljs-keyword">import</span> scala.annotation.tailrec
-
-<span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">FunMath</span> </span>{
-
-  <span class="hljs-meta">@tailrec</span>
-  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">divisibleByThree</span></span>(x: <span class="hljs-type">Int</span>): <span class="hljs-type">Boolean</span> = {
-    <span class="hljs-keyword">val</span> sum = sumOfDigits(x)
-    <span class="hljs-keyword">if</span> (sum &lt; <span class="hljs-number">10</span>) {
-      sum <span class="hljs-keyword">match</span> {
-        <span class="hljs-keyword">case</span> <span class="hljs-number">0</span> | <span class="hljs-number">3</span> | <span class="hljs-number">6</span> | <span class="hljs-number">9</span> =&gt; <span class="hljs-literal">true</span>
-        <span class="hljs-keyword">case</span> _ =&gt; <span class="hljs-literal">false</span>
-      }
-    } <span class="hljs-keyword">else</span> divisibleByThree(sum)
-  }
-
-  <span class="hljs-keyword">private</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">sumOfDigits</span></span>(x: <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = 
-    <span class="hljs-type">Math</span>.abs(x).toString.toList.map(c =&gt; c.asDigit).foldLeft(<span class="hljs-number">0</span>)(_ + _)
-}</code></pre>
+    <section class="slide-content"><h3 id="shared-memory">shared memory</h3>
+<p>Threads within the same process share the same memory space.</p>
+<p>This can create conflict when two threads modify a resource at the same time.</p>
 </section>
   </div>
   <div class="slide hidden" id="slide-5">
-    <section class="slide-content"><h3 id="let-s-test-it">let&#39;s test it</h3>
-<pre><code class="lang-scala"><span class="hljs-keyword">package</span> example
-
-<span class="hljs-keyword">import</span> org.junit.runner.<span class="hljs-type">RunWith</span>
-<span class="hljs-keyword">import</span> org.scalatest.junit.<span class="hljs-type">JUnitRunner</span>
-<span class="hljs-keyword">import</span> org.scalatest.<span class="hljs-type">FunSuite</span>
-
-<span class="hljs-keyword">import</span> math.<span class="hljs-type">FunMath</span>
-<span class="hljs-keyword">import</span> math.<span class="hljs-type">FunMath</span>._
-
-<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">FunMathSuite</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">FunSuite</span> </span>{
-  <span class="hljs-comment">// basic numbers</span>
-  test(<span class="hljs-string">"1 should fail"</span>) {
-    assert(<span class="hljs-type">FunMath</span>.divisibleByThree(<span class="hljs-number">1</span>) == <span class="hljs-literal">false</span>)
-  }
-  test(<span class="hljs-string">"2 should fail"</span>) {
-    assert(<span class="hljs-type">FunMath</span>.divisibleByThree(<span class="hljs-number">2</span>) == <span class="hljs-literal">false</span>)
-  }
-  test(<span class="hljs-string">"3 should pass"</span>) {
-    assert(<span class="hljs-type">FunMath</span>.divisibleByThree(<span class="hljs-number">3</span>) == <span class="hljs-literal">true</span>)
-  }
-}</code></pre>
+    <section class="slide-content"><h3 id="locks">locks</h3>
+<p>Resources can be protected with locks. Only one thread at a time can hold the lock.</p>
 </section>
   </div>
-  <div class="slide hidden  " id="slide-6">
-    <section class="slide-content"><h3 id="let-s-catch-some-corner-cases">let&#39;s catch some corner cases</h3>
-<pre><code class="lang-scala">  <span class="hljs-comment">// tiny numbers</span>
-  test(<span class="hljs-string">"-17077161 should pass"</span>) {
-    assert(<span class="hljs-type">FunMath</span>.divisibleByThree(<span class="hljs-number">-17077161</span>) == <span class="hljs-literal">true</span>)
-  }
-  test(<span class="hljs-string">"-2147483648 should fail"</span>) {
-    assert(<span class="hljs-type">FunMath</span>.divisibleByThree(<span class="hljs-type">Int</span>.<span class="hljs-type">MinValue</span>) == <span class="hljs-literal">false</span>)
-  }
-
-  <span class="hljs-comment">// huge numbers</span>
-  test(<span class="hljs-string">"6442449 should pass"</span>) {
-    assert(<span class="hljs-type">FunMath</span>.divisibleByThree(<span class="hljs-number">6442449</span>) == <span class="hljs-literal">true</span>)
-  }
-  test(<span class="hljs-string">"2147483647 should fail"</span>) {
-    assert(<span class="hljs-type">FunMath</span>.divisibleByThree(<span class="hljs-type">Int</span>.<span class="hljs-type">MaxValue</span>) == <span class="hljs-literal">false</span>)
-  }  
-
-  <span class="hljs-comment">// weird numbers</span>
-  test(<span class="hljs-string">"0 should pass"</span>) {
-    assert(<span class="hljs-type">FunMath</span>.divisibleByThree(<span class="hljs-number">0</span>) == <span class="hljs-literal">true</span>)    
-  }</code></pre>
+  <div class="slide hidden" id="slide-6">
+    <section class="slide-content"><h3 id="synchronized-keyword">synchronized keyword</h3>
+<p>In Java, methods, classes (via static methods), or arbitrary blocks of code can be marked synchronized.</p>
+<p>Only one thread at a time may access a synchronized resource. Other threads will block.</p>
 </section>
   </div>
   <div class="slide hidden" id="slide-7">
-    <section class="slide-content"><h3 id="let-s-encapsulate-our-data">let&#39;s encapsulate our data</h3>
-<pre><code class="lang-scala"><span class="hljs-keyword">package</span> example
-
-<span class="hljs-keyword">import</span> org.junit.runner.<span class="hljs-type">RunWith</span>
-<span class="hljs-keyword">import</span> org.scalatest.junit.<span class="hljs-type">JUnitRunner</span>
-<span class="hljs-keyword">import</span> org.scalatest.<span class="hljs-type">FunSuite</span>
-
-<span class="hljs-keyword">import</span> math.<span class="hljs-type">FunMath</span>
-<span class="hljs-keyword">import</span> math.<span class="hljs-type">FunMath</span>._
-
-<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">FunMathSuite3</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">FunSuite</span> </span>{
-  <span class="hljs-keyword">val</span> multiplesOfThree = <span class="hljs-type">List</span>(<span class="hljs-number">-17077161</span>, <span class="hljs-number">0</span>, <span class="hljs-number">3</span>, <span class="hljs-number">6442449</span>)
-  <span class="hljs-keyword">val</span> nonMultiplesOfThree = <span class="hljs-type">List</span>(<span class="hljs-type">Int</span>.<span class="hljs-type">MinValue</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-type">Int</span>.<span class="hljs-type">MaxValue</span>)
-
-  <span class="hljs-comment">// passing numbers</span>
-  test(<span class="hljs-string">"multiples of three should pass"</span>) {
-    <span class="hljs-keyword">for</span> (num &lt;- multiplesOfThree) {
-      assert(<span class="hljs-type">FunMath</span>.divisibleByThree(num) == <span class="hljs-literal">true</span>, num + <span class="hljs-string">" did not pass"</span>)   
-    }
-  }
-
-  <span class="hljs-comment">// failing numbers</span>
-  test(<span class="hljs-string">"non multiples of three should fail"</span>) {
-    <span class="hljs-keyword">for</span> (num &lt;- nonMultiplesOfThree) {
-      assert(<span class="hljs-type">FunMath</span>.divisibleByThree(num) == <span class="hljs-literal">false</span>, num + <span class="hljs-string">" did not fail"</span>)   
-    }
-  }
-}</code></pre>
+    <section class="slide-content"><h3 id="locks-aka-monitors-">locks (aka monitors)</h3>
+<p>In Java, an entire object can be locked.</p>
+<p>Only one thread at a time may hold the lock. Other threads will block.</p>
 </section>
   </div>
-  <div class="slide hidden" id="slide-8">
-    <section class="slide-content"><h3 id="let-s-add-more-data-points">let&#39;s add more data points</h3>
-<pre><code class="lang-scala"><span class="hljs-keyword">package</span> example
-
-<span class="hljs-keyword">import</span> org.junit.runner.<span class="hljs-type">RunWith</span>
-<span class="hljs-keyword">import</span> org.scalatest.junit.<span class="hljs-type">JUnitRunner</span>
-<span class="hljs-keyword">import</span> org.scalatest.<span class="hljs-type">FunSuite</span>
-
-<span class="hljs-keyword">import</span> math.<span class="hljs-type">FunMath</span>
-<span class="hljs-keyword">import</span> math.<span class="hljs-type">FunMath</span>._
-
-<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">FunMathSuite4</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">FunSuite</span> </span>{
-  <span class="hljs-keyword">val</span> multiplesOfThree = <span class="hljs-number">-17077161</span> :: <span class="hljs-number">6442449</span> :: (<span class="hljs-number">-102</span> to <span class="hljs-number">100</span> by <span class="hljs-number">3</span>).toList  
-  <span class="hljs-keyword">val</span> nonMultiplesOfThree = (<span class="hljs-type">Int</span>.<span class="hljs-type">MinValue</span> :: <span class="hljs-type">Int</span>.<span class="hljs-type">MaxValue</span> :: (<span class="hljs-number">-101</span> to <span class="hljs-number">100</span> by <span class="hljs-number">3</span>).toList 
-    ::: (<span class="hljs-number">-100</span> to <span class="hljs-number">100</span> by <span class="hljs-number">3</span>).toList)
-
-  <span class="hljs-comment">// passing numbers</span>
-  test(<span class="hljs-string">"multiples of three should pass"</span>) {
-    <span class="hljs-keyword">for</span> (num &lt;- multiplesOfThree) {
-      assert(<span class="hljs-type">FunMath</span>.divisibleByThree(num) == <span class="hljs-literal">true</span>, num + <span class="hljs-string">" did not pass"</span>)   
-    }
-  }
-
-  <span class="hljs-comment">// failing numbers</span>
-  test(<span class="hljs-string">"non multiples of three should fail"</span>) {
-    <span class="hljs-keyword">for</span> (num &lt;- nonMultiplesOfThree) {
-      assert(<span class="hljs-type">FunMath</span>.divisibleByThree(num) == <span class="hljs-literal">false</span>, num + <span class="hljs-string">" did not fail"</span>)   
-    }
-  }
-}</code></pre>
+  <div class="slide hidden  " id="slide-8">
+    <section class="slide-content"><h3 id="potential-problems-deadlock">potential problems: deadlock</h3>
+<p>Thread A is waiting to access a resource held by thread B.</p>
+<p>Thread B is waiting to access a resource held by thread A.</p>
+<p>Both threads wait forever.</p>
+<p>Example: meeting in a hallway</p>
 </section>
   </div>
-  <div class="slide hidden  " id="slide-9">
-    <section class="slide-content"><h3 id="too-much-work">too much work</h3>
-<p><img src="file:///Users/celder/Documents/presentations/scalacheck/assets/dog.JPG" alt="Lazy Dog"></p>
+  <div class="slide hidden" id="slide-9">
+    <section class="slide-content"><h3 id="causes-of-deadlock">causes of deadlock</h3>
+<p>In order for deadlock to occur, several conditions must be met.</p>
+<ol>
+<li>Mutual Exclusion: There is limited access to a resource</li>
+<li>Hold and Wait: A process holding a resource can request additional resources, without relinquishing its current resources.</li>
+<li>No Preemption: One process cannot forcibly remove another process&#39; resource.</li>
+<li>Circular Wait: Two or more processes form a circular chain where each process is waiting on another resource in the chain.</li>
+</ol>
 </section>
   </div>
   <div class="slide hidden" id="slide-10">
-    <section class="slide-content"><h3 id="scalacheck-">scalacheck!</h3>
-<p>I&#39;m tired of coming up with data points.</p>
-<p>I want to specify behavior and get data for free.</p>
+    <section class="slide-content"><h3 id="deadlock-prevention">deadlock prevention</h3>
+<p>&quot;Most deadlock prevention algorithms focus on avoiding Circular Wait.&quot; - CCI</p>
+<p>Example: Dining Philosophers</p>
 </section>
   </div>
   <div class="slide hidden" id="slide-11">
-    <section class="slide-content"><h3 id="let-s-let-scalacheck-come-up-with-data-for-us">let&#39;s let scalacheck come up with data for us</h3>
-<pre><code class="lang-scala"><span class="hljs-keyword">package</span> example
-
-<span class="hljs-keyword">import</span> org.scalatest.prop.<span class="hljs-type">Checkers</span>
-<span class="hljs-keyword">import</span> org.scalacheck.<span class="hljs-type">Prop</span>.forAll
-<span class="hljs-keyword">import</span> org.junit.runner.<span class="hljs-type">RunWith</span>
-<span class="hljs-keyword">import</span> org.scalatest.junit.<span class="hljs-type">JUnitRunner</span>
-<span class="hljs-keyword">import</span> org.scalatest.<span class="hljs-type">FunSuite</span>
-
-<span class="hljs-keyword">import</span> math.<span class="hljs-type">FunMath</span>
-<span class="hljs-keyword">import</span> math.<span class="hljs-type">FunMath</span>._
-
-<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">FunMathSuite5</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">FunSuite</span> <span class="hljs-keyword">with</span> <span class="hljs-title">Checkers</span> </span>{
-  <span class="hljs-keyword">val</span> propIsMultipleOfThree = forAll{
-      (n: <span class="hljs-type">Int</span>) =&gt; <span class="hljs-type">FunMath</span>.divisibleByThree(n) == ((n % <span class="hljs-number">3</span>) == <span class="hljs-number">0</span>)
-  }
-
-  test(<span class="hljs-string">"results agree with mod 3"</span>) {
-    check(propIsMultipleOfThree)
-  }
-}</code></pre>
+    <section class="slide-content"><h3 id="livelock">livelock</h3>
+<p>Both threads are doing something, but neither is making progress.</p>
+<p>Livelock can occur after we try to prevent deadlock.</p>
+<p>Let&#39;s revisit our examples.</p>
 </section>
   </div>
-  <div class="slide hidden" id="slide-12">
-    <section class="slide-content"><h3 id="look-out-for">look out for</h3>
-<p>assert ( myBuggyFunction1 == myBuggyFunction2 )</p>
+  <div class="slide hidden  " id="slide-12">
+    <section class="slide-content"><h3 id="livelock-prevention">livelock prevention</h3>
+<p>We could try backing off from requesting resources when congestion is detected (like TCP AIMD). This may introduce race conditions.</p>
+<p>We could introduce a &quot;lock hierarchy&quot;. Threads must acquire a lock on resource A before requesting resource B.</p>
 </section>
   </div>
-  <div class="slide hidden" id="slide-13">
+  <div class="slide hidden  " id="slide-13">
+    <section class="slide-content"><h3 id="other-approaches-to-shared-state">other approaches to shared state</h3>
+<p>Minimize the use of mutable shared state. Functional languages attempt this.</p>
+</section>
+  </div>
+  <div class="slide hidden" id="slide-14">
     <section class="slide-content"><h3 id="thanks-">thanks!</h3>
 </section>
   </div>

@@ -33,7 +33,7 @@ This can create conflict when two threads modify a resource at the same time.
 --
 ### locks
 
-Resources can be protected with locks. Only one thread at a time can hold the lock.
+Resources can be protected with locks. Only one thread at a time can hold the lock. Other threads will block.
 
 --
 ### synchronized keyword
@@ -43,13 +43,6 @@ In Java, methods, classes (via static methods), or arbitrary blocks of code can 
 Only one thread at a time may access a synchronized resource. Other threads will block.
 
 --
-### locks (aka monitors)
-
-In Java, an entire object can be locked.
-
-Only one thread at a time may hold the lock. Other threads will block.
-
--- 
 ### potential problems: deadlock
 
 Thread A is waiting to access a resource held by thread B.
@@ -91,7 +84,7 @@ Let's revisit our examples.
 
 We could try backing off from requesting resources when congestion is detected (like TCP AIMD). This may introduce race conditions.
 
-We could introduce a "lock hierarchy". Threads must request resource A before resource B.
+We could introduce a "lock hierarchy". Threads must acquire a lock on resource A before requesting resource B.
 
 -- 
 ### other approaches to shared state
