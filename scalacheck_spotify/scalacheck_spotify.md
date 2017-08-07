@@ -1,7 +1,7 @@
 title: Property Based Testing for Scio Pipelines 
 output: basic.html
 controls: true
-theme: jdan/cleaver-retro
+theme: sjaakvandenberg/cleaver-dark
 
 --
 
@@ -38,15 +38,13 @@ pros / cons / thoughts
 ### unit testing vs property based testing
 #### what are we testing?
 
-method
-
-property (usually of a method)
+* method
+* property (usually of a method)
 
 #### how are we testing it?
 
-input: data, output: data
-
-input: generator (of data), output: property
+* input: data, output: data
+* input: generator (of data), output: property (characteristics of data)
 
 --
 
@@ -59,15 +57,18 @@ produces data of a specified type
 
 specifies characteristics of a dataset
 
+#### how to use them
+
+generate data, pass it to your function under test, verify property holds for output dataset
+
 --
 
 ### simple use case
 
 For any multiple of three, the sum of its digits is also a multiple of three.
 
-####	12: 1+2 = 3
-
-####	810: 8+1+0 = 9
+* 12: 1+2 = 3
+* 810: 8+1+0 = 9
 
 --
 ### let's try it
@@ -159,14 +160,15 @@ abba quality pipeline
 
 easily generate lots of data to test with
 
+data might be weird
+
 --
 ### scalacheck cons
 
 tests get harder to reason about 
 
-(my\_function\_1 == my\_function\_1)
-or 
-(my\_buggy\_function\_1 == my\_buggy\_function\_2)
+* assert(my\_function\_1 == my\_function\_1)
+* assert(my\_buggy\_function\_1 == my\_buggy\_function\_2)
 
 non deterministic
 
